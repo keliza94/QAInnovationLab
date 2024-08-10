@@ -49,6 +49,35 @@ public class StorePage {
     public void clickLogin() {
         driver.findElement(loginButton).click();
     }
+
+    public boolean verifyLoginSuccess() {
+        try {
+            // Verificar si aparece un mensaje de error de autenticación
+            if (driver.findElements(By.cssSelector("li.alert.alert-danger")).size() > 0) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public boolean isCategoryAvailable(String categoria) {
+        try {
+            WebElement categoryMenu = driver.findElement(By.linkText(categoria));
+            return categoryMenu.isDisplayed();  // Si el elemento es encontrado y está visible, la categoría existe
+        } catch (Exception e) {
+            return false;  // Si se lanza una excepción, la categoría no existe
+        }
+    }
+    public void navigateToCategory(String categoria) {
+        if (isCategoryAvailable(categoria)) {
+            WebElement categoryMenu = driver.findElement(By.linkText(categoria));
+            categoryMenu.click();
+        } else {
+            throw new RuntimeException("Categoría '" + categoria + "' no encontrada.");  // Lanza una excepción si la categoría no existe
+        }
+    }
+
     public void clickCategory(String category) {
         // Usar XPath para encontrar cualquier texto dentro del <a>, ignorando los nodos internos
         By categoryLocator = By.xpath("//a[contains(normalize-space(.),'" + category + "')]");

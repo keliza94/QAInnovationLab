@@ -13,7 +13,9 @@ import static com.nttdata.core.DriverManager.screenShot;
 public class StoreStepsDef {
 
     private WebDriver driver;
+
     private StorePage storePage;
+
 
     @Dado("estoy en la página de la tienda")
     public void estoyEnLaPaginaDeLaTienda() {
@@ -32,6 +34,13 @@ public class StoreStepsDef {
         storePage.clickLogin();
 
         screenShot();
+    }
+
+    @Entonces("valido que la autenticacion sea exitosa")
+    public void validoQueLaAutenticacionSeaExitosa() {
+        boolean isLoginSuccessful = storePage.verifyLoginSuccess();  // Verifica si el login fue exitoso
+        Assert.assertTrue("La autenticación falló. La prueba se detendrá aquí.", isLoginSuccessful);
+        // Si la aserción falla, la prueba se detendrá aquí y no continuará con los siguientes pasos
     }
 
     @Cuando("navego a la categoria {string} y subcategoria {string}")
@@ -102,5 +111,14 @@ public class StoreStepsDef {
         Assert.assertTrue("No se mostró el mensaje de error esperado", errorMessage.contains("No se han encontrado productos"));
 
         screenShot();
+    }
+
+    @Entonces("valido que la categoria {string} existe")
+    public void validoQueLaCategoriaExiste(String categoria) {
+        try {
+            storePage.navigateToCategory(categoria);  // Intenta navegar a la categoría
+        } catch (RuntimeException e) {
+            Assert.fail(e.getMessage());  // Si la categoría no es encontrada, detiene el flujo de la prueba
+        }
     }
 }
